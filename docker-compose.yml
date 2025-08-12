@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # Angular Frontend
+  document-qa-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    container_name: document-qa-frontend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Development version (uncomment to use)
+  # document-qa-frontend-dev:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - "4200:4200"
+  #   container_name: document-qa-frontend-dev
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - NODE_ENV=development
+  #   command: npm start
+
+  # Backend API (uncomment and configure when you have a backend)
+  # document-qa-backend:
+  #   image: your-backend-image:latest
+  #   ports:
+  #     - "3000:3000"
+  #   container_name: document-qa-backend
+  #   restart: unless-stopped
+  #   environment:
+  #     - NODE_ENV=production
+  #     - DATABASE_URL=your-database-url
+  #   depends_on:
+  #     - database
+
+  # Database (uncomment when you need a database)
+  # database:
+  #   image: postgres:15-alpine
+  #   container_name: document-qa-database
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_DB=document_qa
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=your-password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+# Volumes (uncomment when using database)
+# volumes:
+#   postgres_data:

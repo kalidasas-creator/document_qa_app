@@ -160,18 +160,43 @@ private apiUrl = 'http://localhost:3000/auth'; // Update to your backend URL
 
 ## 🚀 Deployment
 
-### Build for Production
+### Docker Deployment (Recommended)
+
+#### Production Build
+```bash
+# Build and run with Docker
+docker build -t document-qa-app .
+docker run -p 80:80 document-qa-app
+
+# Or use Docker Compose
+docker-compose up -d
+```
+
+#### Development with Docker
+```bash
+# Development with hot reload
+docker build -f Dockerfile.dev -t document-qa-app-dev .
+docker run -p 4200:4200 -v $(pwd):/app document-qa-app-dev
+
+# Or use Docker Compose (uncomment development service in docker-compose.yml)
+docker-compose -f docker-compose.yml up document-qa-frontend-dev
+```
+
+### Traditional Deployment
+
+#### Build for Production
 ```bash
 npm run build:prod
 ```
 
 The built application will be in the `dist/` directory, ready for deployment to any static hosting service.
 
-### Deployment Options
+#### Deployment Options
 - **Netlify**: Drag and drop the `dist/` folder
 - **Vercel**: Connect your GitHub repository
 - **AWS S3**: Upload the `dist/` contents
 - **Firebase Hosting**: Use Firebase CLI
+- **Docker**: Use the provided Dockerfile for containerized deployment
 
 ## 🤝 Contributing
 
