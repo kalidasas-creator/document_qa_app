@@ -1,0 +1,129 @@
+<div class="list-container">
+  <div class="list-header">
+    <h2>Document Management</h2>
+    <div class="header-actions">
+      <button (click)="refreshDocuments()" class="btn btn-refresh" [disabled]="isLoading">
+        🔄 {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button (click)="navigateToUpload()" class="btn btn-primary">
+        📄 Upload New Document
+      </button>
+      <button (click)="navigateToQuery()" class="btn btn-secondary">
+        🔍 Query Documents
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading">
+      <p>Loading documents...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+  } @else if (documents) {
+    <div class="documents-summary">
+      <div class="summary-card success">
+        <h3>Successfully Processed</h3>
+        <div class="count">{{ documents.success.count }}</div>
+        <p>Documents ready for querying</p>
+      </div>
+      <div class="summary-card pending">
+        <h3>Pending Processing</h3>
+        <div class="count">{{ documents.pending.count }}</div>
+        <p>Documents being processed</p>
+      </div>
+      <div class="summary-card failed">
+        <h3>Failed Processing</h3>
+        <div class="count">{{ documents.failed.count }}</div>
+        <p>Documents that failed to process</p>
+      </div>
+    </div>
+
+    <!-- Success Documents -->
+    @if (documents.success.documents.length > 0) {
+      <div class="document-section">
+        <h3>Successfully Processed Documents</h3>
+        <div class="document-grid">
+          @for (doc of documents.success.documents; track doc.id) {
+            <div class="document-card success">
+              <div class="document-header">
+                <h4>{{ doc.name }}</h4>
+                <span class="status-badge" [class]="getStatusClass(doc.ingestionStatus)">
+                  {{ getStatusText(doc.ingestionStatus) }}
+                </span>
+              </div>
+              <p class="document-detail">{{ doc.detail }}</p>
+              <div class="document-meta">
+                <span class="date">{{ doc.createdAt | date:'short' }}</span>
+                <span class="progress">100% Complete</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Pending Documents -->
+    @if (documents.pending.documents.length > 0) {
+      <div class="document-section">
+        <h3>Pending Documents</h3>
+        <div class="document-grid">
+          @for (doc of documents.pending.documents; track doc.id) {
+            <div class="document-card pending">
+              <div class="document-header">
+                <h4>{{ doc.name }}</h4>
+                <span class="status-badge" [class]="getStatusClass(doc.ingestionStatus)">
+                  {{ getStatusText(doc.ingestionStatus) }}
+                </span>
+              </div>
+              <p class="document-detail">{{ doc.detail }}</p>
+              <div class="document-meta">
+                <span class="date">{{ doc.createdAt | date:'short' }}</span>
+                <span class="progress">{{ doc.ingestionPercent }}% Complete</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="doc.ingestionPercent"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Failed Documents -->
+    @if (documents.failed.documents.length > 0) {
+      <div class="document-section">
+        <h3>Failed Documents</h3>
+        <div class="document-grid">
+          @for (doc of documents.failed.documents; track doc.id) {
+            <div class="document-card failed">
+              <div class="document-header">
+                <h4>{{ doc.name }}</h4>
+                <span class="status-badge" [class]="getStatusClass(doc.ingestionStatus)">
+                  {{ getStatusText(doc.ingestionStatus) }}
+                </span>
+              </div>
+              <p class="document-detail">{{ doc.detail }}</p>
+              <div class="document-meta">
+                <span class="date">{{ doc.createdAt | date:'short' }}</span>
+                <span class="progress">Failed</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- No Documents -->
+    @if (documents.total === 0) {
+      <div class="no-documents">
+        <p>No documents uploaded yet.</p>
+        <button (click)="navigateToUpload()" class="btn btn-primary">
+          Upload Your First Document
+        </button>
+      </div>
+    }
+  }
+</div>

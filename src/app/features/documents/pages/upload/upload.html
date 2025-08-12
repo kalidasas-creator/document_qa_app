@@ -1,0 +1,65 @@
+<div class="upload-container">
+  <div class="upload-card">
+    <h2>Upload Document</h2>
+    
+    <form (ngSubmit)="onSubmit()" #uploadForm="ngForm">
+      <div class="form-group">
+        <label for="fileInput">Select File</label>
+        <input 
+          type="file" 
+          id="fileInput" 
+          name="fileInput" 
+          (change)="onFileSelected($event)" 
+          accept=".pdf,.txt,.doc,.docx"
+          class="form-control"
+          required>
+        <small class="help-text">
+          Supported formats: PDF, TXT, DOC, DOCX (Max 10MB)
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="detailInput">Document Details</label>
+        <textarea 
+          id="detailInput" 
+          name="detailInput" 
+          [(ngModel)]="detail" 
+          required 
+          class="form-control"
+          rows="3"
+          placeholder="Describe the document content or details"></textarea>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="success-message">
+          {{ successMessage }}
+        </div>
+      }
+
+      <button type="submit" [disabled]="isLoading || !selectedFile" class="btn btn-primary">
+        @if (isLoading) {
+          <span>Uploading...</span>
+        } @else {
+          <span>📤 Upload Document</span>
+        }
+      </button>
+    </form>
+
+    @if (selectedFile) {
+      <div class="file-preview">
+        <h4>Selected File:</h4>
+        <div class="file-info">
+          <p><strong>Name:</strong> {{ selectedFile.name }}</p>
+          <p><strong>Size:</strong> {{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</p>
+          <p><strong>Type:</strong> {{ selectedFile.type }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

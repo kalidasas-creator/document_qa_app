@@ -1,0 +1,93 @@
+<div class="query-container">
+  <div class="query-card">
+    <h2>Query Documents</h2>
+    
+    <form (ngSubmit)="onSubmit()" #queryForm="ngForm">
+      <div class="form-group">
+        <label for="documentSelect">Select Document</label>
+        <select 
+          id="documentSelect" 
+          name="documentSelect" 
+          [(ngModel)]="selectedDocumentId" 
+          required 
+          class="form-control">
+          <option value="">Choose a document...</option>
+          @for (doc of availableDocuments; track doc.id) {
+            <option [value]="doc.id">
+              {{ doc.name }} ({{ getStatusText(doc.ingestionStatus) }})
+            </option>
+          }
+        </select>
+        @if (selectedDocumentId) {
+          <small class="help-text">
+            Selected: {{ getSelectedDocument()?.detail }}
+          </small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="queryInput">Your Query</label>
+        <textarea 
+          id="queryInput" 
+          name="queryInput" 
+          [(ngModel)]="query" 
+          required 
+          class="form-control"
+          rows="4"
+          placeholder="Ask a question about the selected document..."></textarea>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <div class="button-group">
+        <button type="submit" [disabled]="isLoading || !selectedDocumentId" class="btn btn-primary">
+          @if (isLoading) {
+            <span>Querying...</span>
+          } @else {
+            <span>🔍 Submit Query</span>
+          }
+        </button>
+        <button type="button" (click)="clearQuery()" class="btn btn-secondary">
+          Clear
+        </button>
+      </div>
+    </form>
+
+    <!-- Query Results -->
+    @if (queryResult) {
+      <div class="query-results">
+        <h3>Query Results</h3>
+        <div class="result-card">
+          <div class="result-header">
+            <span class="result-status" [class]="'status-' + queryResult.status">
+              {{ queryResult.status }}
+            </span>
+          </div>
+          <div class="result-content">
+            @if (isResponseFormatted()) {
+              <div class="llm-response">
+                <div class="response-text" [innerHTML]="getFormattedResponse() | nl2br"></div>
+              </div>
+            } @else {
+              <div class="raw-response">
+                <pre>{{ queryResult.data | json }}</pre>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- No Documents Available -->
+    @if (availableDocuments.length === 0 && !isLoading) {
+      <div class="no-documents">
+        <p>No documents available for querying. Documents must be successfully processed first.</p>
+        <a routerLink="/documents" class="btn btn-secondary">View Documents</a>
+      </div>
+    }
+  </div>
+</div>
